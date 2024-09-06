@@ -1,0 +1,23 @@
+.date-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 250px; /* Adjusted for better fit */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  color: #f0f0f0; /* Light color for better contrast */
+  font-size: 16px; /* Adjusted for readability */
+  margin: 20px auto; /* Centered horizontally with margin */
+  text-align: center;
+  padding: 15px; /* Added padding for better appearance */
+  border-radius: 10px; /* More rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+}
+
+body {
+  background-image: url('./assets/wall.jpg');
+  background-repeat: no-repeat; /* Prevents image from repeating */
+  background-size: cover; /* Ensures the image covers the entire viewport */
+  background-position: center; /* Centers the image within the viewport */
+  margin: 0; /* Removes default margin around the body */
+  font-family: Arial, sans-serif; /* Sets a clean font for the body */
+}
