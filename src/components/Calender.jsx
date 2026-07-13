@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null);
-  const [events, setEvents] = useState({});
   const [isFormVisible, setFormVisible] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', time: '', color: '#ffffff' });
 
@@ -66,8 +65,14 @@ const Calendar = () => {
     }
   };
 
-  // Merge default events with the state events
-  const mergedEvents = { ...defaultEvents, ...events };
+  const [events, setEvents] = useState(() => {
+    const savedEvents = localStorage.getItem('calendarEvents');
+    return savedEvents ? JSON.parse(savedEvents) : defaultEvents;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('calendarEvents', JSON.stringify(events));
+  }, [events]);
 
   const goToPreviousMonth = () => {
     setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
@@ -93,10 +98,13 @@ const Calendar = () => {
     e.preventDefault();
     if (selectedDay) {
       const updatedEvents = { ...events };
-      if (!updatedEvents[selectedDay]) {
-        updatedEvents[selectedDay] = [];
+      if (!updatedEvents[currentMonth]) {
+        updatedEvents[currentMonth] = {};
       }
-      updatedEvents[selectedDay].push(newEvent);
+      if (!updatedEvents[currentMonth][selectedDay]) {
+        updatedEvents[currentMonth][selectedDay] = [];
+      }
+      updatedEvents[currentMonth][selectedDay].push(newEvent);
       setEvents(updatedEvents);
       setNewEvent({ title: '', time: '', color: '#ffffff' });
       setFormVisible(false);
@@ -106,8 +114,10 @@ const Calendar = () => {
   const handleRemoveEvent = () => {
     if (selectedDay) {
       const updatedEvents = { ...events };
-      delete updatedEvents[selectedDay];
-      setEvents(updatedEvents);
+      if (updatedEvents[currentMonth]) {
+        delete updatedEvents[currentMonth][selectedDay];
+        setEvents(updatedEvents);
+      }
       setSelectedDay(null);
     }
   };
@@ -346,7 +356,7 @@ const Calendar = () => {
               <div key={day} className="day-name">{day}</div>
             ))}
             {daysArray.map((day, index) => {
-              const dayEvents = mergedEvents[currentMonth]?.[day] || [];
+              const dayEvents = events[currentMonth]?.[day] || [];
               return (
                 <div
                   key={index}
@@ -368,7 +378,7 @@ const Calendar = () => {
           {selectedDay && (
             <div className="event-panel">
               <h3>Events on {selectedDay}</h3>
-              {mergedEvents[currentMonth]?.[selectedDay] && mergedEvents[currentMonth][selectedDay].map((event, index) => (
+              {events[currentMonth]?.[selectedDay] && events[currentMonth][selectedDay].map((event, index) => (
                 <div key={index} className="event">
                   <div className="event-title">{event.title}</div>
                   <div>{event.time}</div>
